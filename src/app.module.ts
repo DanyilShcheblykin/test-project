@@ -16,15 +16,18 @@ import { DataSource } from 'typeorm';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { LanguageModule } from './language/language.module';
 import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
+import { validate } from './utils/validators/env.validation';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.development.local', '.env.development', '.env'],
-      load: [authConfig, emailConfig, databaseConfig , appConfig], // this is for having asses to config data
+      validate,
+      load: [authConfig, emailConfig, databaseConfig, appConfig], // this is for having asses to config data
     }),
     TypeOrmModule.forRootAsync({
       //configuration for TypeORM
@@ -40,6 +43,7 @@ import appConfig from './config/app.config';
     EventEmitterModule.forRoot(),
     AuthModule,
     StudentModule,
+    LanguageModule,
   ],
 })
 export class AppModule {}
