@@ -1,0 +1,9 @@
+1. nest g resource '....' - generate resource 
+
+2. @Injectable() - allows the class to be injected into other classes
+
+3. @JoinColumn({ name: 'some_name' }) - defining foreign key, should to use in relations:
+Many-to-One/One-to-Many , One-to-One
+
+
+ 

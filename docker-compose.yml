@@ -1,0 +1,36 @@
+version: '3.9'
+services:
+  backend:
+    container_name: lms_backend
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    env_file:
+      - .env.development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: lms_postgres
+    image: postgres:14.5-alpine
+    restart: always
+    env_file:
+      - .env.development
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: '1111'
+      POSTGRES_DB: 'lms'
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
