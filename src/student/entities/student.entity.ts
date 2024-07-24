@@ -1,4 +1,8 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+} from 'typeorm';
 import { EntityBase } from 'src/utils/entity-base';
 import { Language } from 'src/language/entities/language.entity';
 
@@ -31,6 +35,6 @@ export class Student extends EntityBase {
   @Column({ nullable: true, default: null })
   refreshTokenHash: string;
 
-  @OneToMany(() => Language, (studentLanguage) => studentLanguage.students)
+  @ManyToOne(() => Language, (studentLanguage) => studentLanguage.students)
   language: Language;
 }

@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Student } from './student/entities/student.entity';
 import { VerificationCode } from './auth/entities/verification-code.entity';
 import { TemporaryJwtStrategy } from './auth/strategy/temporary.jwt';
-import { AuthJwtStrategy } from './auth/strategy/access.jwt';
+import { AccessJwtStrategy } from './auth/strategy/access.jwt';
 import authConfig from './config/auth.config';
 import emailConfig from './config/email.config';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
@@ -22,7 +22,7 @@ import appConfig from './config/app.config';
 import { validate } from './utils/validators/env.validation';
 
 @Module({
-  imports: [
+  imports: [ 
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.development.local', '.env.development', '.env'],

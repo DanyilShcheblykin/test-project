@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { VerificationCode } from './entities/verification-code.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
-import { AuthJwtStrategy } from './strategy/access.jwt';
+import { AccessJwtStrategy } from './strategy/access.jwt';
 import { TemporaryJwtStrategy } from './strategy/temporary.jwt';
 import { AuthController } from './auth.controller';
 import { StudentModule } from 'src/student/student.module';
@@ -17,7 +17,7 @@ import { EmailModule } from 'src/email/email.module';
     StudentModule,
     EmailModule,
   ],
-  providers: [AuthService, AuthJwtStrategy, TemporaryJwtStrategy],
+  providers: [AuthService, AccessJwtStrategy, TemporaryJwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

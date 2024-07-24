@@ -6,4 +6,18 @@
 Many-to-One/One-to-Many , One-to-One
 
 
+
+==========================================
+Errors:
+1. Nest can't resolve dependencies of the
+ LanguageService (?). Please make sure that the argument
+ "LanguageRepository" at index [0]
+1. SOLVE - imports: [TypeOrmModule.forFeature([Language])], 
+==========================================
+Migrations:
+1.Generatemigrations- npm run migration:generate src/database/migrations/lms_test   
+
+
+
+
  

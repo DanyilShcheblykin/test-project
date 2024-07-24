@@ -124,6 +124,8 @@ export class AuthService {
   }
 
   public async createAccessToken(payload: any): Promise<any> {
+    console.log("payload")
+    console.log(payload)
     return this.jwtService.signAsync(payload, {
       secret: this.configService.get('auth.jwtSecret'),
       expiresIn: '7d',
@@ -140,6 +142,7 @@ export class AuthService {
 
     const payload = { sub: student.id, role: 'student' };
     const accessToken = await this.createAccessToken(payload);
+    
     return { accessToken };
   }
 }
