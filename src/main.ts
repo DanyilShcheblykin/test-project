@@ -53,7 +53,7 @@ async function bootstrap() {
 
   app.use('/robots.txt', express.static(join(__dirname, '..', 'robots.txt')));
 
-  await app.listen(3001, host);
+  await app.listen(3005, host);
   console.log(`Lms listening on port ${port} on ${await app.getUrl()}`);
 }
 bootstrap();

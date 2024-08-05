@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Patch,
-  Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -19,7 +18,7 @@ export class StudentController {
 
   @ApiBearerAuth()
   @UseGuards(AccessJwtAuthGuard)
-  @Patch('update')
+  @Patch()
   async updateStudentInfo(
     @Req() user,
     @Body() updateStudentDto: UpdateStudentRequestDto,
@@ -30,7 +29,7 @@ export class StudentController {
 
   @ApiBearerAuth()
   @UseGuards(AccessJwtAuthGuard)
-  @Get('')
+  @Get('me')
   async getUserInfo(@Req() user) {
     const { id } = user.user;
     return this.studentService.getUserInfo(id);

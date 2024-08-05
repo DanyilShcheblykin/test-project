@@ -1,10 +1,7 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { EntityBase } from 'src/utils/entity-base';
 import { Language } from 'src/language/entities/language.entity';
+import { Level } from 'src/level/entities.ts/level.entity';
 
 @Entity({ name: 'students' })
 export class Student extends EntityBase {
@@ -36,5 +33,10 @@ export class Student extends EntityBase {
   refreshTokenHash: string;
 
   @ManyToOne(() => Language, (studentLanguage) => studentLanguage.students)
+  @JoinColumn({ name: 'language_id' })
   language: Language;
+
+  @ManyToOne(() => Level, (studentLevel) => studentLevel.students)
+  @JoinColumn({ name: 'level_id' })
+  level: Level;
 }

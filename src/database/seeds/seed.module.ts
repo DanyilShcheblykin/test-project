@@ -7,7 +7,7 @@ import { DataSource } from 'typeorm';
 import { TypeOrmConfigService } from '../typeorm-config.service';
 import { validate } from 'src/utils/validators/env.validation';
 import { LanguageSeedModule } from './language/language-seed.module';
-
+import { LevelSeedModule } from './level/level-seed.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,6 +23,7 @@ import { LanguageSeedModule } from './language/language-seed.module';
       },
     }),
     LanguageSeedModule,
+    LevelSeedModule,
   ],
 })
 export class SeedModule {}

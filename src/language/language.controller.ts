@@ -3,8 +3,8 @@ import { LanguageService } from './language.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccessJwtAuthGuard } from 'src/auth/guards/access-jwt-auth';
 
-@ApiTags('langauges')
-@Controller('languages')
+@ApiTags('langauge')
+@Controller('language')
 export class LanguageController {
   constructor(private readonly languageService: LanguageService) {}
 

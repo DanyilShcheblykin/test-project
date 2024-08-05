@@ -13,13 +13,13 @@ export class AuthController {
   });
   constructor(private authService: AuthService) {}
 
-  @Post('student/sign-up')
+  @Post('sign-up/student')
   async createStudent(@Body() createStudentDto: CreateStudentRequestDto) {
     console.log('sign up Student');
     return this.authService.signUpStudent(createStudentDto);
   }
 
-  @Post('student/log-in')
+  @Post('log-in/student')
   async loginStudent(@Body() loginStudentDto: LoginStudentDto) {
     return this.authService.loginStudent(loginStudentDto);
   }

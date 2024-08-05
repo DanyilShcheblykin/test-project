@@ -6,6 +6,7 @@ import { CreateStudentRequestDto } from './dto/create-student';
 import * as bcrypt from 'bcryptjs';
 import { UpdateStudentRequestDto } from './dto/update-student';
 import { LanguageService } from 'src/language/language.service';
+import { LevelService } from 'src/level/level.service';
 
 @Injectable()
 export class StudentService {
@@ -13,6 +14,7 @@ export class StudentService {
     @InjectRepository(Student)
     private readonly studentRep: Repository<Student>,
     private readonly languageService: LanguageService,
+    private readonly levelService: LevelService,
   ) {}
 
   async createStudent(
@@ -48,7 +50,7 @@ export class StudentService {
   public async getUserInfo(studentId: string) {
     const student = await this.studentRep.findOne({
       where: { id: studentId },
-      relations: ['language'],
+      relations: ['language', 'level'],
     });
     return student;
   }
@@ -58,10 +60,14 @@ export class StudentService {
     studentId: string,
   ) {
     const student = await this.findOneById(studentId);
-    const { languageId, ...restData } = updateStudentDto;
-    if (languageId) {
-      const language = await this.languageService.getLanguageById(languageId);
+    const { language_id, level_id, ...restData } = updateStudentDto;
+    if (language_id) {
+      const language = await this.languageService.getLanguageById(language_id);
       student.language = language;
+    }
+    if (level_id) {
+      const level = await this.levelService.getLevelById(level_id);
+      student.level = level;
     }
 
     Object.assign(student, restData);

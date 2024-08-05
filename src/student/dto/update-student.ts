@@ -26,5 +26,10 @@ export class UpdateStudentRequestDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
-  languageId: string;
+  language_id: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  level_id: string;
 }
