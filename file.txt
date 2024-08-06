@@ -1,22 +1,28 @@
-1. nest g resource '....' - generate resource 
+==========================================
+Common !!!!!!!!!!!!!!!
 
+1. nest g resource '....' - generate resource 
 2. @Injectable() - allows the class to be injected into other classes
 
-3. @JoinColumn({ name: 'some_name' }) - defining foreign key, should to use in relations:
-Many-to-One/One-to-Many , One-to-One
-
-
-
 ==========================================
-Errors:
+ERRORS !!!!!!!!!!!!!!!
+
 1. Nest can't resolve dependencies of the
  LanguageService (?). Please make sure that the argument
  "LanguageRepository" at index [0]
 1. SOLVE - imports: [TypeOrmModule.forFeature([Language])], 
-==========================================
-Migrations:
-1.Generatemigrations- npm run migration:generate src/database/migrations/lms_test   
 
+==========================================
+DATABASE!!!!!!!!!!!!!!
+
+1. Generate migrations- npm run migration:generate src/database/migrations/lms_test   
+2  @JoinColumn({ name: 'some_name' }) - defining foreign key, should to use in relations:
+Many-to-One/One-to-Many , One-to-One
+3  Give name in many-to-many -  @JoinTable({
+    name: 'teacher_level',
+    joinColumns: [{ name: 'teacher_id', referencedColumnName: 'id' }],
+    inverseJoinColumns: [{ name: 'level_id', referencedColumnName: 'id' }],
+  })
 
 
 

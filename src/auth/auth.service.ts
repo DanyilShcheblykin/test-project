@@ -43,9 +43,6 @@ export class AuthService {
       firstName: createStudentDto.firstName,
     };
 
-    console.log('dataForEamilVerification');
-    console.log(dataForEamilVerification);
-
     const html = getVerificationEmail(
       dataForEamilVerification,
       'student',

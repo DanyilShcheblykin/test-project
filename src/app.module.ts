@@ -21,6 +21,7 @@ import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
 import { validate } from './utils/validators/env.validation';
 import { LevelModule } from './level/level.module';
+import { TeacherModule } from './teacher/teacher.module';
 
 @Module({
   imports: [ 
@@ -46,6 +47,7 @@ import { LevelModule } from './level/level.module';
     StudentModule,
     LanguageModule,
     LevelModule,
+    TeacherModule,
   ],
 })
 export class AppModule {}
