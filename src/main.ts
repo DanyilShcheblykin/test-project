@@ -11,7 +11,11 @@ async function bootstrap() {
 
   // For development only
   const corsOptions = {
-    origin: ['http://localhost:3001', 'https://lms.corpsoft.io'],
+    origin: [
+      'http://localhost:3001',
+      'http://localhost:3001',
+      'https://lms.corpsoft.io',
+    ],
     allowedHeaders: [
       'Access-Control-Allow-Origin',
       'Origin',

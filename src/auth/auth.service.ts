@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateStudentRequestDto } from 'src/student/dto/create-student'; // Adjust path as necessary
-import { Student } from 'src/student/entities/student.entity'; // Adjust path as necessary
 import { Repository } from 'typeorm';
 import { VerificationCode } from './entities/verification-code.entity';
 import { StudentService } from 'src/student/student.service'; // Adjust path as necessary
@@ -13,19 +12,22 @@ import { JwtService } from '@nestjs/jwt';
 import { EmailService } from 'src/email/email.service'; // Adjust path as necessary
 import { VerifiLinkDto } from './dto/verifi-link';
 import { LoginStudentDto } from 'src/student/dto/log-in';
+import { CreateTeacherRequestDto } from 'src/teacher/dto/create-teacher.dto';
+import { TeacherService } from 'src/teacher/teacher.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(Student)
-    private readonly studentRepo: Repository<Student>, // Corrected to use Student repository
-    private readonly studentService: StudentService,
-    private readonly configService: ConfigService,
     @InjectRepository(VerificationCode)
     private readonly verificationCodeRepo: Repository<VerificationCode>,
+    private readonly studentService: StudentService,
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    private readonly teacherService: TeacherService,
   ) {}
+
+  // ===============student===============
 
   async signUpStudent(createStudentDto: CreateStudentRequestDto) {
     const student = await this.studentService.createStudent(createStudentDto);
@@ -55,7 +57,7 @@ export class AuthService {
       html,
     );
 
-    const payload = { sub: student.id };
+    const payload = { sub: student.id, role: 'student' };
     const temporaryToken = await this.createTemporaryToken(payload);
     return { code: verificationCode, student, temporaryToken };
   }
@@ -113,16 +115,13 @@ export class AuthService {
 
     const payload = { sub: student.id, role: 'student' };
     const accessToken = await this.createAccessToken(payload);
-    const findedStudent = await this.studentRepo.findOne({
-      where: { id: student.id },
-    });
-
+    const findedStudent = await this.studentService.findOneById(student.id);
     return { accessToken, studentId: findedStudent.id, student: findedStudent };
   }
 
   public async createAccessToken(payload: any): Promise<any> {
-    console.log("payload")
-    console.log(payload)
+    console.log('payload');
+    console.log(payload);
     return this.jwtService.signAsync(payload, {
       secret: this.configService.get('auth.jwtSecret'),
       expiresIn: '7d',
@@ -130,16 +129,83 @@ export class AuthService {
   }
 
   public async loginStudent(loginStudentDto: LoginStudentDto) {
-    const student = await this.studentRepo.findOne({
-      where: { email: loginStudentDto.email },
-    });
+    const student = await this.studentService.findOneByEmail(
+      loginStudentDto.email,
+    );
     if (!student) {
       throw new UnauthorizedException('Invalid email or password');
     }
 
     const payload = { sub: student.id, role: 'student' };
     const accessToken = await this.createAccessToken(payload);
-    
+
     return { accessToken };
+  }
+
+  // =================teacher=====================
+
+  public async signupTeacher(
+    createTeacherDto: CreateTeacherRequestDto,
+    files: Array<Express.Multer.File>,
+  ) {
+    const teacher = await this.teacherService.createTeacher(
+      createTeacherDto,
+      files,
+    );
+    const { verificationCode, experationTime } =
+      await this.createVerificationCode();
+
+    await this.verificationCodeRepo.save<any>({
+      verificationCode,
+      experationTime,
+      teacher,
+    });
+
+    const dataForEamilVerification = {
+      baseUrl: this.configService.get('app.baseUrl'),
+      firstName: createTeacherDto.firstName,
+    };
+
+    const html = getVerificationEmail(
+      dataForEamilVerification,
+      'student',
+      verificationCode,
+    );
+    this.emailService.sendMailSmtp(
+      createTeacherDto.email,
+      'Student Email Verification Notification',
+      null,
+      html,
+    );
+
+    const tempToken = await this.createTemporaryToken({
+      role: 'teacher',
+      sub: teacher.id,
+    });
+
+    return { teacher, verificationCode, tempToken };
+  }
+
+  public async teahcerVerifiLink(verifiLinkDto: VerifiLinkDto) {
+    const { verify_code } = verifiLinkDto;
+    const verifyLinkData = await this.verificationCodeRepo.findOne({
+      where: { verificationCode: verify_code },
+      relations: ['teacher'],
+    });
+    if (!verifyLinkData) {
+      throw new UnauthorizedException('Code is not valid');
+    }
+    const { teacher } = verifyLinkData;
+    const expirationTime = new Date(verifyLinkData.experationTime).getTime();
+    const currentTime = new Date().getTime();
+    if (expirationTime < currentTime) {
+      throw new UnauthorizedException('Code has expired');
+    }
+
+    const payload = { sub: teacher.id, role: 'student' };
+    const accessToken = await this.createAccessToken(payload);
+    const findedTeacher = await this.teacherService.findOneById(teacher.id);
+
+    return { accessToken, studentId: findedTeacher.id, student: findedTeacher };
   }
 }

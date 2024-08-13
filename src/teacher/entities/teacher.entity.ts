@@ -5,13 +5,18 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { EntityBase } from 'src/utils/entity-base';
 import { Language } from 'src/language/entities/language.entity';
 import { Level } from 'src/level/entities.ts/level.entity';
+import { File } from 'src/file/entities/file.entity';
 
 @Entity({ name: 'teachers' })
 export class Teacher extends EntityBase {
+  @Column({ nullable: false })
+  typeOfTeacher: string;
+
   @Column({ nullable: false })
   firstName: string;
 
@@ -50,4 +55,7 @@ export class Teacher extends EntityBase {
     inverseJoinColumns: [{ name: 'level_id', referencedColumnName: 'id' }],
   })
   level: Array<Level>;
+
+  @OneToMany(() => File, (file) => file.teacher)
+  files: Array<File>;
 }

@@ -9,6 +9,7 @@ import { AuthController } from './auth.controller';
 import { StudentModule } from 'src/student/student.module';
 import { Student } from 'src/student/entities/student.entity';
 import { EmailModule } from 'src/email/email.module';
+import { TeacherModule } from 'src/teacher/teacher.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EmailModule } from 'src/email/email.module';
     JwtModule.register({}),
     StudentModule,
     EmailModule,
+    TeacherModule,
   ],
   providers: [AuthService, AccessJwtStrategy, TemporaryJwtStrategy],
   controllers: [AuthController],

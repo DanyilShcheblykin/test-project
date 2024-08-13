@@ -47,6 +47,14 @@ export class StudentService {
     return student;
   }
 
+  public async findOneByEmail(email: string) {
+    const student = this.studentRep.findOne({ where: { email } });
+    if (!student) {
+      throw new BadRequestException('User not found');
+    }
+    return student;
+  }
+
   public async getUserInfo(studentId: string) {
     const student = await this.studentRep.findOne({
       where: { id: studentId },
