@@ -23,9 +23,6 @@ export class TeacherService {
   }
   public async findOneByEmail(email: string) {
     const teacher = await this.teacherRepo.findOne({ where: { email } });
-    if (teacher) {
-      throw new BadRequestException('Teacher already exists');
-    }
     return teacher;
   }
 
@@ -35,8 +32,10 @@ export class TeacherService {
   ) {
     const { typeOfTeacher, firstName, lastName, email, password, timezone } =
       createTeacherDto;
-console.log("-----")
-    await this.findOneByEmail(email);
+    const findedTeacher = await this.findOneByEmail(email);
+    if (findedTeacher) {
+      throw new BadRequestException('Teacher already exists');
+    }
 
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
@@ -51,5 +50,9 @@ console.log("-----")
     });
     await this.fileService.saveFiles(files, savedTeacher);
     return savedTeacher;
+  }
+
+  public async getUserInfo(id: string) {
+    return await this.teacherRepo.findOne({ where: { id } });
   }
 }

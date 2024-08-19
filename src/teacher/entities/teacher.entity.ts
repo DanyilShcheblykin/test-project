@@ -1,4 +1,5 @@
 import {
+  AfterInsert,
   Column,
   Entity,
   JoinColumn,
@@ -13,7 +14,8 @@ import { Level } from 'src/level/entities.ts/level.entity';
 import { File } from 'src/file/entities/file.entity';
 
 @Entity({ name: 'teachers' })
-export class Teacher extends EntityBase {
+export class Teacher extends EntityBase  {
+
   @Column({ nullable: false })
   typeOfTeacher: string;
 

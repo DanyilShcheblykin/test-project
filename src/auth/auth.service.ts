@@ -14,6 +14,7 @@ import { VerifiLinkDto } from './dto/verifi-link';
 import { LoginStudentDto } from 'src/student/dto/log-in';
 import { CreateTeacherRequestDto } from 'src/teacher/dto/create-teacher.dto';
 import { TeacherService } from 'src/teacher/teacher.service';
+import { LogInTeacherRequestDto } from 'src/teacher/dto/login-teacher.dto';
 
 @Injectable()
 export class AuthService {
@@ -62,41 +63,6 @@ export class AuthService {
     return { code: verificationCode, student, temporaryToken };
   }
 
-  async createVerificationCode() {
-    const verificationCode = this.generateCode();
-    const encryptedVerificationCode = this.encryptCode(verificationCode);
-    const expirationTime = new Date();
-    expirationTime.setMinutes(expirationTime.getMinutes() + 5);
-    return {
-      verificationCode: encryptedVerificationCode,
-      experationTime: expirationTime,
-    };
-  }
-
-  public generateCode(): string {
-    const uuid = uuidv4();
-    const code = uuid.replace(/-/g, '').substring(0, 10);
-    return code;
-  }
-
-  public encryptCode(code: string): string {
-    const algorithm = 'aes-256-ecb';
-
-    const key = this.configService.get('auth.verifyCodeSecret');
-    console.log(key);
-    const cipher = createCipheriv(algorithm, key, null);
-    let encrypted = cipher.update(code, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    return encrypted;
-  }
-
-  public async createTemporaryToken(payload: any): Promise<any> {
-    return this.jwtService.signAsync(payload, {
-      secret: this.configService.get('auth.jwtTemporarySecret'),
-      expiresIn: '5m',
-    });
-  }
-
   public async studentVerifiLink(verifiLinkDto: VerifiLinkDto) {
     const { verify_code } = verifiLinkDto;
     const verifyLinkData = await this.verificationCodeRepo.findOne({
@@ -117,15 +83,6 @@ export class AuthService {
     const accessToken = await this.createAccessToken(payload);
     const findedStudent = await this.studentService.findOneById(student.id);
     return { accessToken, studentId: findedStudent.id, student: findedStudent };
-  }
-
-  public async createAccessToken(payload: any): Promise<any> {
-    console.log('payload');
-    console.log(payload);
-    return this.jwtService.signAsync(payload, {
-      secret: this.configService.get('auth.jwtSecret'),
-      expiresIn: '7d',
-    });
   }
 
   public async loginStudent(loginStudentDto: LoginStudentDto) {
@@ -207,5 +164,65 @@ export class AuthService {
     const findedTeacher = await this.teacherService.findOneById(teacher.id);
 
     return { accessToken, studentId: findedTeacher.id, student: findedTeacher };
+  }
+
+  public async loginTeacher(loginTeachertDto: LogInTeacherRequestDto) {
+    const teacher = await this.teacherService.findOneByEmail(
+      loginTeachertDto.email,
+    );
+    if (!teacher) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    const payload = { sub: teacher.id, role: 'teacher' };
+    const accessToken = await this.createAccessToken(payload);
+
+    return { accessToken };
+  }
+
+  // =================common=====================
+
+  async createVerificationCode() {
+    const verificationCode = this.generateCode();
+    const encryptedVerificationCode = this.encryptCode(verificationCode);
+    const expirationTime = new Date();
+    expirationTime.setMinutes(expirationTime.getMinutes() + 5);
+    return {
+      verificationCode: encryptedVerificationCode,
+      experationTime: expirationTime,
+    };
+  }
+
+  public generateCode(): string {
+    const uuid = uuidv4();
+    const code = uuid.replace(/-/g, '').substring(0, 10);
+    return code;
+  }
+
+  public encryptCode(code: string): string {
+    const algorithm = 'aes-256-ecb';
+
+    const key = this.configService.get('auth.verifyCodeSecret');
+    console.log(key);
+    const cipher = createCipheriv(algorithm, key, null);
+    let encrypted = cipher.update(code, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+  }
+
+  public async createTemporaryToken(payload: any): Promise<any> {
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get('auth.jwtTemporarySecret'),
+      expiresIn: '5m',
+    });
+  }
+
+  public async createAccessToken(payload: any): Promise<any> {
+    console.log('payload');
+    console.log(payload);
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get('auth.jwtSecret'),
+      expiresIn: '7d',
+    });
   }
 }

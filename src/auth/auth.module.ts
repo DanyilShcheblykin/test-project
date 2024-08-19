@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { VerificationCode } from './entities/verification-code.entity';
 import { JwtModule } from '@nestjs/jwt';
@@ -10,6 +10,7 @@ import { StudentModule } from 'src/student/student.module';
 import { Student } from 'src/student/entities/student.entity';
 import { EmailModule } from 'src/email/email.module';
 import { TeacherModule } from 'src/teacher/teacher.module';
+import { LoggerMiddleware } from 'src/middlewares/loger.middleware';
 
 @Module({
   imports: [
@@ -22,4 +23,8 @@ import { TeacherModule } from 'src/teacher/teacher.module';
   providers: [AuthService, AccessJwtStrategy, TemporaryJwtStrategy],
   controllers: [AuthController],
 })
-export class AuthModule {}
+export class AuthModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes(AuthController);
+  }
+}
